@@ -6,7 +6,7 @@ const main = async()=>{
     await deployedwhitelist.deployed();
 
     console.info(`Deployed Whitelist Contract Address:${deployedwhitelist.address}`)
-
+    
 }
 
 main().then(()=>{
