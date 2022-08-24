@@ -18,6 +18,17 @@ contract Whitelist{
 
     }
 
+    function whitelistedaddress(address _address)public view returns(bool){
+    if(whitelist[msg.sender]!=false{
+    return true;
+    }
+    else{
+    return false; 
+    }
+
+
+    }
+
      
      
 
