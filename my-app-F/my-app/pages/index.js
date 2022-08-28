@@ -1,12 +1,14 @@
+import React from 'react';
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import Web3Modal from 'web3modal';
 import { WHITELIST_CONTRACT_ADDRESS, abi } from "../constants";
 
+
 export Default function Home () {
   const [walletconnected,setwalletconnected] = useState('false');
-  const [joinedlist,setjionedlist] = useState('false');
+  const [joinedlist,setjoinedlist] = useState('false');
   const [loading,setloading] = useState('false');
   const[numwhitelisted,setnumwhitelisted] = useState(0);
 
@@ -51,12 +53,13 @@ export Default function Home () {
     catch{(err)=>{
       console.error(err);
     }
+  };
+
+
+
+
+  
   }
-
-  
-
-  
-}
 
 
 const Checkinwhitelist = async ()=>{
@@ -70,15 +73,57 @@ try{
   );
   const address = await signer.getAddress();
   const _joinedwhitelist = whitelistContract.whitelistedaddress(address);
-  setjionedlist(_joinedlist);
-
-  
+  setjoinedlist(_joinedlist);
 }
 catch{(err)=>{
   console.error(err);
 }}
 
 }
+
+const connectwallet = async()=>{
+  try{
+    await getProviderOrSigner;
+    setwalletconnected(true);
+
+    Checkinwhitelist();
+    addAddressToWhitelist();
+
+
+  }catch{(err)=>{
+console.error(err);
+  }
+
+  }
+  
+}
+
+const renderButton = () => {
+  if (walletConnected) {
+    if (joinedWhitelist) {
+      return (
+        <div className={styles.description}>
+          Thanks for joining the Whitelist!
+        </div>
+      );
+    } else if (loading) {
+      return <button className={styles.button}>Loading...</button>;
+    } else {
+      return (
+        <button onClick={addAddressToWhitelist} className={styles.button}>
+          Join the Whitelist
+        </button>
+      );
+    }
+  } else {
+    return (
+      <button onClick={connectWallet} className={styles.button}>
+        Connect your wallet
+      </button>
+    );
+  }
+};
+
 
 return(
   <>
