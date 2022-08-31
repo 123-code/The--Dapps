@@ -8,7 +8,7 @@ import "./IWhitelist.sol";
  
 
 
-contract CryptoDevs is ERC721Enumerable, Ownable{
+contract CryptoDevs is ERC721Enumerable,Ownable{
 
 string _basetokenuri;
 IWhitelist whitelist;
@@ -16,6 +16,8 @@ bool public presalestarted;
 uint public tokenids;
 uint public maxtokenids = 20;
 uint public price = 0.01 ether;
+bool public _paused;
+uint public presaleended;
 
 
 
@@ -29,7 +31,7 @@ whitelist = IWhitelist(whitelistcontract);
 
 
 modifier notpaused {
-    require(!paused,"Error");
+    require(!_paused,"Error");
 
     _;
     
@@ -49,13 +51,13 @@ function startPresale() public onlyOwner{
 
 function PresaleMint() public payable notpaused {
  require(presalestarted && block.timestamp < presaleended,"presale has ended");
-    require(whitelist.Whitelistedaddresses(msg.sender));
+    require(whitelist.whitelistedAddresses(msg.sender));
     require(tokenids < maxtokenids,"Presale has ended :(");
     require(msg.value >= price,"transaction Error");
 
     tokenids +=1;
 
-    _safeMint(msg.sender,tokenIds);
+    _safeMint(msg.sender,tokenids);
     
 }
 
@@ -63,7 +65,7 @@ function Mint() public payable{
     require(presalestarted && block.timestamp > presaleended,"presale is ongoing!");
     require(tokenids < maxtokenids,"Presale has ended :(");
     require(msg.value >= price,"transaction Error");
-    _safeMint(msg.sender,tokenIds);
+    _safeMint(msg.sender,tokenids);
 
 
 
