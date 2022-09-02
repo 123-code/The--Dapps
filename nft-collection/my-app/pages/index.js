@@ -121,6 +121,16 @@ return web3provider;
   }
 
 
+  const onpageload = async()=>{
+    connectwallet();
+    checkpresalestarted();
+
+    if(presalestarted){
+      await checkpresaleended();
+    }
+
+  }
+
  
   useEffect(()=>{
     if(!walletconnected){
@@ -133,7 +143,7 @@ return web3provider;
       )
 
     }
-    checkpresalestarted();
+    onpageload();
 
   },[])
   return (
