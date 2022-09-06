@@ -3,7 +3,7 @@ import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import {useRef,useState,useEffect} from 'react';
 import Web3Modal from 'web3modal';
-import { Contract, providers } from 'ethers';
+import { Contract, ethers, providers,utils } from 'ethers';
 import {NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI} from "../constants";
 // deployed 0x5FbDB2315678afecb367f032d93F642f64180aa3
 
@@ -25,7 +25,7 @@ const getcontractowner = async()=>{
 
   const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer);
 
-  const owner = nftcontract.owner();
+  const owner = await nftcontract.owner();
   if(owner.toLowerCase === signer ){
     console.info("same")
   }
@@ -39,6 +39,51 @@ const getcontractowner = async()=>{
 console.error(err);
   }}
   
+}
+
+const presalemint = async()=>{
+
+try{
+  const signer = await getproviderorsigner(true);
+  const nftcontract = new Contract(
+    NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer
+  )
+const txn = await nftcontract.presaleMint({
+  value:utils.parseEther(0.01),
+})
+
+await txn.wait();
+
+}
+catch{
+  (err)=>{
+    console.error(err);
+  }
+}
+
+  
+  
+}
+
+
+const publicsalemint = async ()=>{
+  try{
+    const signer = await getproviderorsigner(true);
+    const nftcontract = new Contract(
+      NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer
+    )
+  const txn = await nftcontract.mint({
+    value:utils.parseEther(0.01),
+  })
+  
+  await txn.wait();
+  
+  }
+  catch{
+    (err)=>{
+      console.error(err);
+    }
+  }
 }
 
 
@@ -84,9 +129,12 @@ const checkpresalestarted = async ()=>{
     setpresalestarted(presalestarted);
 
 
+    return presalestarted;
+
 
   }catch{(err)=>{
     console.error(err);
+    return false;
   }};
   
   
@@ -124,12 +172,46 @@ return web3provider;
   const onpageload = async()=>{
     connectwallet();
     checkpresalestarted();
+    getcontractowner();
+
 
     if(presalestarted){
       await checkpresaleended();
     }
 
   }
+
+function handlefunctions(){
+  if(!presalestarted && isowner){
+    return(
+      <button onClick={startpresale}> Start Presale </button>
+    )
+  }
+
+
+  if(!presalestarted){
+    <div style={styles.description}> Presale has not started yet, come back later </div>
+
+  }
+
+  if(presalestarted && !presaleended){
+    return(
+
+<button onClick={presalemint}>
+<span className={styles.description}> Mint a CryptoDev Now </span>
+Presale Mint 
+</button>
+    )
+
+  }
+
+  if(presaleended){
+<button onClick={publicsalemint}>
+<span className={styles.description}> Mint a CryptoDev Now </span>
+Public Sale ON!
+</button>
+  }
+}
 
  
   useEffect(()=>{
