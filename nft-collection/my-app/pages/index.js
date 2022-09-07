@@ -143,23 +143,33 @@ const checkpresalestarted = async ()=>{
 
 
   const connectwallet = async()=>{
-    await getproviderorsigner();
-    setwalletconnected(true);
+    try{
+      await getproviderorsigner();
+      setwalletconnected(true);
+    }
+    catch{(err)=>{
+      console.error(err);
+    }}
+    
 
 
   }
 
 
-const getproviderorsigner = async(signer=false)=>{
-    const provider = await web3modalref.current.connect();
+const getproviderorsigner = async(signer = false)=>{
+  const provider = await web3modalref.current.connect();
 const web3provider = new ethers.providers.Web3Provider(provider);
+
+
 
 const {chainid} = await web3provider.getNetwork();
 
+/*
 if(chainid !==4){
   window.alert("Not connected to rinkeby!");
   throw new Error("Incorrect network");
 }
+*/
 
 if(signer){
   const signer = web3provider.getSigner();
@@ -181,37 +191,6 @@ return web3provider;
 
   }
 
-function handlefunctions(){
-  if(!presalestarted && isowner){
-    return(
-      <button onClick={startpresale}> Start Presale </button>
-    )
-  }
-
-
-  if(!presalestarted){
-    <div style={styles.description}> Presale has not started yet, come back later </div>
-
-  }
-
-  if(presalestarted && !presaleended){
-    return(
-
-<button onClick={presalemint}>
-<span className={styles.description}> Mint a CryptoDev Now </span>
-Presale Mint 
-</button>
-    )
-
-  }
-
-  if(presaleended){
-<button onClick={publicsalemint}>
-<span className={styles.description}> Mint a CryptoDev Now </span>
-Public Sale ON!
-</button>
-  }
-}
 
  
   useEffect(()=>{
@@ -225,9 +204,50 @@ Public Sale ON!
       )
 
     }
-    onpageload();
+    
 
-  },[])
+  })
+  onpageload();
+
+  const renderbutton = ()=>{
+    if(!walletconnected){
+      return(
+        <button onClick={connectwallet} className={styles.button}> Connect Wallet </button>
+      )
+    }
+
+    if(!presalestarted && isowner){
+      return(
+        <button onClick={startpresale} className={styles.button}> Start Presale </button>
+      )
+    }
+  
+  
+    if(!presalestarted){
+      <div style={styles.description}> Presale has not started yet, come back later </div>
+  
+    }
+  
+    if(presalestarted && !presaleended){
+      return(
+  
+  <button onClick={presalemint}>
+  <span className={styles.description}> Mint a CryptoDev Now </span>
+  Presale Mint 
+  </button>
+      )
+  
+    }
+  
+    if(presaleended){
+  <button onClick={publicsalemint}>
+  <span className={styles.description}> Mint a CryptoDev Now </span>
+  Public Sale ON!
+  </button>
+    }
+  }
+
+
   return (
    <div>
     <Head>
@@ -235,8 +255,11 @@ Public Sale ON!
     </Head>
   
       <div className={styles.main}>
-      {!walletconnected ?   <button onClick = {connectwallet()} className = {styles.button}> Connect Wallet </button>
-: null }
+        <div>
+        {renderbutton()}
+        </div>
+       
+      
 
       </div>
    </div>
