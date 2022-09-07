@@ -3,7 +3,7 @@ import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import {useRef,useState,useEffect} from 'react';
 import Web3Modal from 'web3modal';
-import { Contract, ethers, providers,utils } from 'ethers';
+import { Contract, providers, utils } from "ethers";
 import {NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI} from "../constants";
 // deployed 0x5FbDB2315678afecb367f032d93F642f64180aa3
 
@@ -25,15 +25,12 @@ const getcontractowner = async()=>{
 
   const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer);
 
-  const owner = await nftcontract.owner();
-  if(owner.toLowerCase === signer ){
+  const isowner = await nftcontract.owner();
+  if(isowner.toLowerCase() === signer ){
+    setisowner(true);
     console.info("same")
   }
-  else{
-    console.info("Error");
-  }
-
-
+  
   }
   catch{(err)=>{
 console.error(err);
@@ -156,22 +153,22 @@ const checkpresalestarted = async ()=>{
   }
 
 
-const getproviderorsigner = async(signer = false)=>{
+const getproviderorsigner = async(needSigner = false)=>{
   const provider = await web3modalref.current.connect();
-const web3provider = new ethers.providers.Web3Provider(provider);
+  const web3provider = new providers.Web3Provider(provider);
 
 
 
-const {chainid} = await web3provider.getNetwork();
+const { chainid } = await web3provider.getNetwork();
+window.alert(chainid);
 
-/*
 if(chainid !==4){
   window.alert("Not connected to rinkeby!");
   throw new Error("Incorrect network");
 }
-*/
 
-if(signer){
+
+if(needSigner = false){
   const signer = web3provider.getSigner();
   return signer;
 }
@@ -195,21 +192,20 @@ return web3provider;
  
   useEffect(()=>{
     if(!walletconnected){
-      web3modalref.current = new Web3Modal(
-        {
-          network:"rinkeby",
-          providerOptions:{},
-          disableInjectedProvider:false,
-        }
-      )
+      web3modalref.current = new Web3Modal({
+        network: "rinkeby",
+        providerOptions: {},
+        disableInjectedProvider: false,
+      });
 
     }
     
+connectwallet();
+  }, [walletconnected]);
 
-  })
-  onpageload();
 
   const renderbutton = ()=>{
+
     if(!walletconnected){
       return(
         <button onClick={connectwallet} className={styles.button}> Connect Wallet </button>
