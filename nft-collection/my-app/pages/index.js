@@ -139,69 +139,55 @@ const checkpresalestarted = async ()=>{
 }
 
 
-  const connectwallet = async()=>{
-    try{
-      await getproviderorsigner();
-      setwalletconnected(true);
-    }
-    catch{(err)=>{
-      console.error(err);
-    }}
+const connectwallet = async () => {
+  try {
     
-
-
+    await getproviderorsigner();
+    setwalletconnected(true);
+  } catch (err) {
+    console.error(err);
   }
+};
 
 
-const getproviderorsigner = async(needSigner = false)=>{
+const getproviderorsigner = async (needSigner = false) => {
+
   const provider = await web3modalref.current.connect();
-  const web3provider = new providers.Web3Provider(provider);
+  const web3Provider = new providers.Web3Provider(provider);
 
-
-
-const { chainid } = await web3provider.getNetwork();
-window.alert(chainid);
-
-if(chainid !==4){
-  window.alert("Not connected to rinkeby!");
-  throw new Error("Incorrect network");
-}
-
-
-if(needSigner = false){
-  const signer = web3provider.getSigner();
-  return signer;
-}
-return web3provider;
+  // If user is not connected to the Rinkeby network, let them know and throw an error
+  const { chainId } = await web3Provider.getNetwork();
+  if (chainId !== 4) {
+    window.alert("Change the network to Rinkeby");
+    throw new Error("Change network to Rinkeby");
   }
 
+  if (needSigner) {
+    const signer = web3Provider.getSigner();
+    return signer;
+  }
+  return web3Provider;
+};
 
-  const onpageload = async()=>{
+
+useEffect(() => {
+  // if wallet is not connected, create a new instance of Web3Modal and connect the MetaMask wallet
+  if (!walletconnected) {
+window.alert(walletconnected);
+
+    web3modalref.current = new Web3Modal({
+      network: "rinkeby",
+      providerOptions: {},
+      disableInjectedProvider: false,
+    });
     connectwallet();
-    checkpresalestarted();
-    getcontractowner();
 
-
-    if(presalestarted){
-      await checkpresaleended();
-    }
-
-  }
-
-
- 
-  useEffect(()=>{
-    if(!walletconnected){
-      web3modalref.current = new Web3Modal({
-        network: "rinkeby",
-        providerOptions: {},
-        disableInjectedProvider: false,
-      });
-
-    }
     
-connectwallet();
-  }, [walletconnected]);
+    const _presaleStarted = checkpresalestarted();
+    if (_presaleStarted) {
+      checkpresaleended()
+    }
+  } },[walletconnected])
 
 
   const renderbutton = ()=>{
