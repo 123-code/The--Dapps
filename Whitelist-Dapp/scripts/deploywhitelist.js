@@ -8,7 +8,7 @@ const main = async()=>{
     console.info(`Deployed Whitelist Contract Address:${deployedwhitelist.address}`)
     
 }
-
+// contract address: 0xa76C690b3d38c51C603c930FF38066A993E4F497
 main().then(()=>{
    
     console.info("succesful deployment");
