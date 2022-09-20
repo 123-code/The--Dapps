@@ -21,7 +21,7 @@ export default function Home() {
 // function gets us the owner of the contract.
 const getcontractowner = async()=>{
   try{
-  const signer = await getproviderorsigner(true);
+  const signer = await getProviderOrSigner(true);
 
   const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer);
 
@@ -41,7 +41,7 @@ console.error(err);
 const presalemint = async()=>{
 
 try{
-  const signer = await getproviderorsigner(true);
+  const signer = await getProviderOrSigner(true);
   const nftcontract = new Contract(
     NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer
   )
@@ -65,7 +65,7 @@ catch{
 
 const publicsalemint = async ()=>{
   try{
-    const signer = await getproviderorsigner(true);
+    const signer = await getProviderOrSigner(true);
     const nftcontract = new Contract(
       NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer
     )
@@ -86,7 +86,7 @@ const publicsalemint = async ()=>{
 
 const startpresale = async ()=>{
   try{
-    const signer = await getproviderorsigner(true);
+    const signer = await getProviderOrSigner(true);
     const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer);
     const tx = await nftcontract.startPresale();
     await tx.wait();
@@ -101,7 +101,7 @@ console.error(err);
 
 const checkpresaleended = async()=>{
   try{
-    const provider = await getproviderorsigner();
+    const provider = await getProviderOrSigner();
     const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,provider);
    
     
@@ -120,7 +120,7 @@ setpresaleended(false);
 
 const checkpresalestarted = async ()=>{
   try{
-    const provider = await getproviderorsigner();
+    const provider = await getProviderOrSigner();
     const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,provider);
     const presalestarted = await nftcontract.presaleStarted();
     setpresalestarted(presalestarted);
@@ -139,27 +139,28 @@ const checkpresalestarted = async ()=>{
 }
 
 
-const connectwallet = async () => {
-  try {
-    
-    await getproviderorsigner();
+const connectwallet = async()=>{
+  try{
+    await getProviderOrSigner();
     setwalletconnected(true);
-  } catch (err) {
+
+  }catch(err){
     console.error(err);
   }
 };
 
 
-const getproviderorsigner = async (needSigner = false) => {
-
+const getProviderOrSigner = async (needSigner = false) => {
+  // Connect to Metamask
+  // Since we store `web3Modal` as a reference, we need to access the `current` value to get access to the underlying object
   const provider = await web3modalref.current.connect();
   const web3Provider = new providers.Web3Provider(provider);
 
-  // If user is not connected to the Rinkeby network, let them know and throw an error
+  // If user is not connected to the Goerli network, let them know and throw an error
   const { chainId } = await web3Provider.getNetwork();
   if (chainId !== 4) {
-    window.alert("Change the network to Rinkeby");
-    throw new Error("Change network to Rinkeby");
+    window.alert("Change the network to rinkeby");
+    throw new Error("Change network to rinkeby");
   }
 
   if (needSigner) {
@@ -170,25 +171,18 @@ const getproviderorsigner = async (needSigner = false) => {
 };
 
 
-useEffect(() => {
-  // if wallet is not connected, create a new instance of Web3Modal and connect the MetaMask wallet
-  if (!walletconnected) {
-window.alert(walletconnected);
 
+useEffect(()=>{
+  if(!walletconnected){
     web3modalref.current = new Web3Modal({
       network: "rinkeby",
       providerOptions: {},
       disableInjectedProvider: false,
     });
     connectwallet();
+  }
 
-    
-    const _presaleStarted = checkpresalestarted();
-    if (_presaleStarted) {
-      checkpresaleended()
-    }
-  } },[walletconnected])
-
+},[walletconnected])
 
   const renderbutton = ()=>{
 
@@ -247,3 +241,4 @@ window.alert(walletconnected);
    </div>
   )
 }
+
