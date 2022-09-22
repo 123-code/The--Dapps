@@ -3,7 +3,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import Web3Modal from 'web3modal';
-import ethers from "ethers";
+import ethers, { Contract } from "ethers";
 import { providers } from "ethers";
 
 import {NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI} from "../constants";
@@ -11,7 +11,62 @@ import {NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI} from "../constants";
 export default function Home() {
   const Web3ModalRef = useRef();
   const [walletConnected,setwalletConnected] = useState(false);
+  const [presaleStarted,setpresaleStarted] = useState(false);
+  const [presaleended,setpresaleended] = useState(false);
+  const [isowner,setisowner] = useState(false);
 
+const getowner = async()=>{
+  try{
+    const signer= getProviderOrSigner();
+    const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer);
+    const owner = nftcontract.owner();
+    const useraddress = signer.getAddress();
+
+    if(owner.toLowerCase() === owner.toLowerCase()){
+      setisowner(true)
+    }
+
+  
+  }
+  catch(err){
+    console.error(err)
+  }
+
+}
+
+  const startpresale = async()=>{
+    try{
+      const signer = await getProviderOrSigner(true);
+      const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,provider);
+      const txn = await nftcontract.startPresale();
+      await txn.wait();
+      setpresaleStarted(true); 
+    }
+
+catch(err){
+  console.error(err);
+}
+  }
+
+  const checkpresalestarted = async()=>{
+    try{
+      const provider = await getProviderOrSigner();
+      const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,provider);
+      const presalestarted = await nftcontract.presaleStarted();
+      setpresaleStarted(presalestarted);
+    }
+    catch(err){
+      console.error(err);
+    }
+  }
+
+const checkpresaleneded = async()=>{
+  try{
+
+  }catch(err){
+    console.error(err);
+  }
+}
 
   const connectwallet = async () => {
     try {
@@ -50,6 +105,7 @@ export default function Home() {
           disableInjectedProvider:false,
         });
         connectwallet();
+        checkpresalestarted();
       }
 
 
