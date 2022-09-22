@@ -1,244 +1,77 @@
+import {React,useRef,useState,useEffect} from 'react';
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import {useRef,useState,useEffect} from 'react';
 import Web3Modal from 'web3modal';
-import { Contract, providers, utils } from "ethers";
+import ethers from "ethers";
+import { providers } from "ethers";
+
 import {NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI} from "../constants";
-// deployed 0x5FbDB2315678afecb367f032d93F642f64180aa3
-
-
-
-
-
+ 
 export default function Home() {
-  const [walletconnected,setwalletconnected] = useState(false);
-  const [presalestarted,setpresalestarted] = useState(false);
-  const [isowner,setisowner] = useState(false);
-  const [presaleended,setpresaleended] = useState(false);
-  const web3modalref = useRef();
-
-// function gets us the owner of the contract.
-const getcontractowner = async()=>{
-  try{
-  const signer = await getProviderOrSigner(true);
-
-  const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer);
-
-  const isowner = await nftcontract.owner();
-  if(isowner.toLowerCase() === signer ){
-    setisowner(true);
-    console.info("same")
-  }
-  
-  }
-  catch{(err)=>{
-console.error(err);
-  }}
-  
-}
-
-const presalemint = async()=>{
-
-try{
-  const signer = await getProviderOrSigner(true);
-  const nftcontract = new Contract(
-    NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer
-  )
-const txn = await nftcontract.presaleMint({
-  value:utils.parseEther(0.01),
-})
-
-await txn.wait();
-
-}
-catch{
-  (err)=>{
-    console.error(err);
-  }
-}
-
-  
-  
-}
+  const Web3ModalRef = useRef();
+  const [walletConnected,setwalletConnected] = useState(false);
 
 
-const publicsalemint = async ()=>{
-  try{
-    const signer = await getProviderOrSigner(true);
-    const nftcontract = new Contract(
-      NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer
-    )
-  const txn = await nftcontract.mint({
-    value:utils.parseEther(0.01),
-  })
-  
-  await txn.wait();
-  
-  }
-  catch{
-    (err)=>{
+  const connectwallet = async () => {
+    try {
+
+      await getProviderOrSigner();
+      setwalletConnected(true);
+    } catch (err) {
       console.error(err);
     }
-  }
-}
+  };
 
-
-const startpresale = async ()=>{
-  try{
-    const signer = await getProviderOrSigner(true);
-    const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer);
-    const tx = await nftcontract.startPresale();
-    await tx.wait();
-
-
-  }
-  catch{(err)=>{
-console.error(err);
-  }}
-
-}
-
-const checkpresaleended = async()=>{
-  try{
-    const provider = await getProviderOrSigner();
-    const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,provider);
-   
+  const getProviderOrSigner = async (needSigner = false) => {
     
-  const presaleendtime = await nftcontract.presaleEnded();
-  //date in seconds.
-  const now = Date.now()/1000;
-const haspresaleended = presaleendtime.lt(Math.floor(now));
-setpresaleended(false);
+    const provider = await Web3ModalRef.current.connect();
+    const web3Provider = new providers.Web3Provider(provider);
 
-
-  }catch{(err)=>{
-    console.error(err);
-  }};
-}
-
-
-const checkpresalestarted = async ()=>{
-  try{
-    const provider = await getProviderOrSigner();
-    const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,provider);
-    const presalestarted = await nftcontract.presaleStarted();
-    setpresalestarted(presalestarted);
-
-
-    return presalestarted;
-
-
-  }catch{(err)=>{
-    console.error(err);
-    return false;
-  }};
-  
-  
-
-}
-
-
-const connectwallet = async()=>{
-  try{
-    await getProviderOrSigner();
-    setwalletconnected(true);
-
-  }catch(err){
-    console.error(err);
-  }
-};
-
-
-const getProviderOrSigner = async (needSigner = false) => {
-  // Connect to Metamask
-  // Since we store `web3Modal` as a reference, we need to access the `current` value to get access to the underlying object
-  const provider = await web3modalref.current.connect();
-  const web3Provider = new providers.Web3Provider(provider);
-
-  // If user is not connected to the Goerli network, let them know and throw an error
-  const { chainId } = await web3Provider.getNetwork();
-  if (chainId !== 4) {
-    window.alert("Change the network to rinkeby");
-    throw new Error("Change network to rinkeby");
-  }
-
-  if (needSigner) {
-    const signer = web3Provider.getSigner();
-    return signer;
-  }
-  return web3Provider;
-};
-
-
-
-useEffect(()=>{
-  if(!walletconnected){
-    web3modalref.current = new Web3Modal({
-      network: "rinkeby",
-      providerOptions: {},
-      disableInjectedProvider: false,
-    });
-    connectwallet();
-  }
-
-},[walletconnected])
-
-  const renderbutton = ()=>{
-
-    if(!walletconnected){
-      return(
-        <button onClick={connectwallet} className={styles.button}> Connect Wallet </button>
-      )
+    
+    const { chainId } = await web3Provider.getNetwork();
+    if (chainId !== 4) {
+      window.alert("Change the network to rinkeby");
+      throw new Error("Change network to rinkeby");
     }
 
-    if(!presalestarted && isowner){
-      return(
-        <button onClick={startpresale} className={styles.button}> Start Presale </button>
-      )
+    if (needSigner) {
+      const signer = web3Provider.getSigner();
+      return signer;
     }
-  
-  
-    if(!presalestarted){
-      <div style={styles.description}> Presale has not started yet, come back later </div>
-  
-    }
-  
-    if(presalestarted && !presaleended){
-      return(
-  
-  <button onClick={presalemint}>
-  <span className={styles.description}> Mint a CryptoDev Now </span>
-  Presale Mint 
-  </button>
-      )
-  
-    }
-  
-    if(presaleended){
-  <button onClick={publicsalemint}>
-  <span className={styles.description}> Mint a CryptoDev Now </span>
-  Public Sale ON!
-  </button>
-    }
-  }
+    return web3Provider;
+  };
+
+    useEffect(()=>{
+      if(!walletConnected){
+        Web3ModalRef.current = new Web3Modal({
+          network:"rinkeby",
+          providerOptions:{},
+          disableInjectedProvider:false,
+        });
+        connectwallet();
+      }
 
 
-  return (
+    },[])
+
+  
+
+
+  return(
    <div>
     <Head>
-      <title> NFT Minter </title>
+      <title> CryptoDevs NFT</title>
     </Head>
+<div className={styles.main}>
   
-      <div className={styles.main}>
-        <div>
-        {renderbutton()}
-        </div>
-       
-      
+{!walletConnected ? (<button onClick={connectwallet} className={styles.button}> connect wallet </button>)
+: null}
+    
 
-      </div>
+</div>
    </div>
+    
   )
 }
 
