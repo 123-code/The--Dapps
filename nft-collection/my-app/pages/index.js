@@ -14,15 +14,16 @@ export default function Home() {
   const [presaleStarted,setpresaleStarted] = useState(false);
   const [presaleended,setpresaleended] = useState(false);
   const [isowner,setisowner] = useState(false);
-
+//
 const getowner = async()=>{
   try{
-    const signer= getProviderOrSigner();
-    const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer);
-    const owner = nftcontract.owner();
-    const useraddress = signer.getAddress();
+    const provider = await getProviderOrSigner();
+    const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,provider);
+    const owner = await nftcontract.owner();
+    const signer = await getProviderOrSigner(true);
+    const useraddress = await signer.getAddress();
 
-    if(owner.toLowerCase() === owner.toLowerCase()){
+    if(useraddress.toLowerCase() === owner.toLowerCase()){
       setisowner(true)
     }
 
@@ -33,35 +34,43 @@ const getowner = async()=>{
   }
 
 }
-
+//
   const startpresale = async()=>{
     try{
       const signer = await getProviderOrSigner(true);
-      const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,provider);
+      const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer);
       const txn = await nftcontract.startPresale();
       await txn.wait();
       setpresaleStarted(true); 
-    }
-
-catch(err){
-  console.error(err);
-}
+    }catch(err){console.error(err);}
   }
 
   const checkpresalestarted = async()=>{
     try{
       const provider = await getProviderOrSigner();
       const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,provider);
-      const presalestarted = await nftcontract.presaleStarted();
-      setpresaleStarted(presalestarted);
+      const _presalestarted = await nftcontract.presaleStarted();
+      if(_presalestarted){
+        await nftcontract.getowner();
+      }
+      setpresaleStarted(_presalestarted);
+      return _presalestarted;
     }
     catch(err){
       console.error(err);
+      return false;
     }
   }
 
 const checkpresaleneded = async()=>{
   try{
+    const provider = getProviderOrSigner();
+    const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,provider);
+    const presaleended = await nftcontract.presaleEnded();
+    const currenttimesec = Date.now()/1000;
+
+    const haspresaleended = presaleended.lt.Math.floor((currenttimesec));
+    setpresaleended(haspresaleended);
 
   }catch(err){
     console.error(err);
@@ -91,12 +100,23 @@ const checkpresaleneded = async()=>{
     }
 
     if (needSigner) {
-      const signer = web3Provider.getSigner();
+      const signer =  await web3Provider.getSigner();
+      
       return signer;
     }
     return web3Provider;
   };
 
+  const onpageload = async()=>{
+    await connectwallet();
+    await getowner();
+    const presalestarted = await checkpresalestarted();
+    if(presalestarted){
+      const presaleended = await checkpresaleended();
+
+    }
+
+  }
     useEffect(()=>{
       if(!walletConnected){
         Web3ModalRef.current = new Web3Modal({
@@ -104,15 +124,38 @@ const checkpresaleneded = async()=>{
           providerOptions:{},
           disableInjectedProvider:false,
         });
-        connectwallet();
-        checkpresalestarted();
+        
+        onpageload();
       }
 
 
     },[])
 
-  
+    function renderbody(){
+      if(!walletConnected){
+        return(
+          <button onClick={connectwallet} className={styles.button}> Connect Wallet </button>
+        )
+      }
+      if(isowner && !presaleStarted){
+        return(
+          <button onClick={startpresale} className={styles.button}>Start presale</button>
+        )
 
+      }
+
+      if(!presaleStarted){
+
+      }
+
+      if(presaleStarted && !presaleEnded){
+
+      }
+
+      if(presaleended){
+
+      }
+    }
 
   return(
    <div>
@@ -121,8 +164,7 @@ const checkpresaleneded = async()=>{
     </Head>
 <div className={styles.main}>
   
-{!walletConnected ? (<button onClick={connectwallet} className={styles.button}> connect wallet </button>)
-: null}
+{renderbody()}
     
 
 </div>

@@ -1,5 +1,9 @@
-export const NFT_CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-export const NFT_CONTRACT_ABI = [
+//0xe7F0d7931A7Bf39CE3F7EE82505e05Ce1436a7D7
+// URL to extract Metadata for a Crypto Dev NFT
+const METADATA_URL = "https://nft-collection-sneh1999.vercel.app/api/";
+ const WHITELIST_CONTRACT_ADDRESS = "0xa76C690b3d38c51C603c930FF38066A993E4F497";
+ export const NFT_CONTRACT_ADDRESS = "0xe7F0d7931A7Bf39CE3F7EE82505e05Ce1436a7D7";
+ export const NFT_CONTRACT_ABI = [
     {
       "inputs": [
         {
@@ -582,3 +586,5 @@ export const NFT_CONTRACT_ABI = [
       "type": "receive"
     }
   ]
+
+

@@ -1,8 +1,9 @@
-
+//0xe7F0d7931A7Bf39CE3F7EE82505e05Ce1436a7D7
 // URL to extract Metadata for a Crypto Dev NFT
 const METADATA_URL = "https://nft-collection-sneh1999.vercel.app/api/";
-export const NFT_CONTRACT_ADDRESS = "0x074898869a8bcDf56eD2f4D4c3Ff8F3Afa00c058";
-export const NFT_CONTRACT_ABI = [
+ const WHITELIST_CONTRACT_ADDRESS = "0xa76C690b3d38c51C603c930FF38066A993E4F497";
+ const NFT_CONTRACT_ADDRESS = "0xe7F0d7931A7Bf39CE3F7EE82505e05Ce1436a7D7";
+ const NFT_CONTRACT_ABI = [
     {
       "inputs": [
         {
