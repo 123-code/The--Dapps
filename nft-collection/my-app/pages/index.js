@@ -3,7 +3,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import Web3Modal from 'web3modal';
-import ethers, { Contract } from "ethers";
+import ethers, { Contract,utils } from "ethers";
 import { providers } from "ethers";
 
 import {NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI} from "../constants";
@@ -15,6 +15,19 @@ export default function Home() {
   const [presaleended,setpresaleended] = useState(false);
   const [isowner,setisowner] = useState(false);
 //
+const presalemint = async()=>{
+ try{
+const signer = getProviderOrSigner(true);
+const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer);
+const txn = await nftcontract.presaleMint({
+  value:utils.parseEther("0.01"),
+}); 
+await txn.wait();
+window.alert("You have minted a cryptoDev!")
+ }catch(err){
+  console.error(err)
+ }
+}
 const getowner = async()=>{
   try{
     const provider = await getProviderOrSigner();
@@ -112,7 +125,7 @@ const checkpresaleneded = async()=>{
     await getowner();
     const presalestarted = await checkpresalestarted();
     if(presalestarted){
-      const presaleended = await checkpresaleended();
+      const presaleended = await checkpresaleneded();
 
     }
 
@@ -145,15 +158,31 @@ const checkpresaleneded = async()=>{
       }
 
       if(!presaleStarted){
+        <div>
+          <span className={styles.description}> Presale has
+          not started, come back later!
+          </span>
+        </div>
+
 
       }
 
-      if(presaleStarted && !presaleEnded){
+      if(presaleStarted && !presaleended){
+        <div>
+          <span className={styles.description}>Presale Started </span>
+          <button className={styles.description}> Presale Mint </button>
+        </div>
+        
 
       }
 
       if(presaleended){
-
+return(
+  <div>
+  <span className={styles.description}>Presale Ended, mint in regular sale </span>
+  <button className={styles.description}> Regular Mint  </button>
+</div>
+)
       }
     }
 
