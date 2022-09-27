@@ -14,10 +14,10 @@ export default function Home() {
   const [presaleStarted,setpresaleStarted] = useState(false);
   const [presaleended,setpresaleended] = useState(false);
   const [isowner,setisowner] = useState(false);
-//
+//nftcontract.getowner
 const presalemint = async()=>{
  try{
-const signer = getProviderOrSigner(true);
+const signer = await getProviderOrSigner(true);
 const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer);
 const txn = await nftcontract.presaleMint({
   value:utils.parseEther("0.01"),
@@ -30,7 +30,7 @@ window.alert("You have minted a cryptoDev!")
 }
 const publicmint = async()=>{
   try{
-    const signer = getProviderOrSigner(true);
+    const signer = await getProviderOrSigner(true);
     const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer);
     const txn = await nftcontract.mint({
       value:utils.parseEther("0.01"),
@@ -77,7 +77,7 @@ const getowner = async()=>{
       const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,provider);
       const _presalestarted = await nftcontract.presaleStarted();
       if(_presalestarted){
-        await nftcontract.getowner();
+        await getowner();
       }
       setpresaleStarted(_presalestarted);
       return _presalestarted;
@@ -90,12 +90,12 @@ const getowner = async()=>{
 
 const checkpresaleneded = async()=>{
   try{
-    const provider = getProviderOrSigner();
+    const provider = await getProviderOrSigner();
     const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,provider);
     const presaleended = await nftcontract.presaleEnded();
     const currenttimesec = Date.now()/1000;
 
-    const haspresaleended = presaleended.lt.Math.floor((currenttimesec));
+    const haspresaleended = presaleended.lt(Math.floor((currenttimesec)));
     setpresaleended(haspresaleended);
 
   }catch(err){
