@@ -28,6 +28,19 @@ window.alert("You have minted a cryptoDev!")
   console.error(err)
  }
 }
+const publicmint = async()=>{
+  try{
+    const signer = getProviderOrSigner(true);
+    const nftcontract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,signer);
+    const txn = await nftcontract.mint({
+      value:utils.parseEther("0.01"),
+    }); 
+    await txn.wait();
+    window.alert("You have minted a cryptoDev!")
+     }catch(err){
+      console.error(err)
+     }
+}
 const getowner = async()=>{
   try{
     const provider = await getProviderOrSigner();
@@ -170,7 +183,7 @@ const checkpresaleneded = async()=>{
       if(presaleStarted && !presaleended){
         <div>
           <span className={styles.description}>Presale Started </span>
-          <button className={styles.description}> Presale Mint </button>
+          <button className={styles.description} onClick={presalemint}> Presale Mint </button>
         </div>
         
 
@@ -180,7 +193,7 @@ const checkpresaleneded = async()=>{
 return(
   <div>
   <span className={styles.description}>Presale Ended, mint in regular sale </span>
-  <button className={styles.description}> Regular Mint  </button>
+  <button className={styles.description} onClick={publicmint}> Regular Mint  </button>
 </div>
 )
       }
