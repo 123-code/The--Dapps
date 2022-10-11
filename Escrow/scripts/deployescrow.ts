@@ -12,7 +12,7 @@ async function main() {
   
     await lock.deployed();
   
-   con sole.log(`Deployed To ${lock.address}`)
+   console.log(`Deployed To ${lock.address}`)
   }
   
   // We recommend this pattern to be able to use async/await everywhere

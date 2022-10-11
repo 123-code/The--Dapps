@@ -11,6 +11,7 @@ contract Escrow is ERC721Enumerable{
 address public buyer;
 address public seller;
 uint256 public  amount;
+string public baseuri;
 mapping(address=>bool) public isseller;
 mapping(address=>bool) public isbuyer;
 mapping(address=>bool)public moneysent;
@@ -27,9 +28,8 @@ modifier requireisbuyer(address user){
     _;
 }
 
-constructor () ERC721("SaleTokens", "ST") {
-      
-    
+constructor(string memory _baseuri)ERC721("Escrow","ET"){
+      baseuri = _baseuri;
       }
 
 function registerseller()public{
