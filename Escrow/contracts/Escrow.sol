@@ -8,8 +8,8 @@ contract Escrow is ERC721Enumerable{
    confirm they have received the other's, swap is executed, 
    otherwise nothing happens.
    */
-address public buyer;
-address public seller;
+address payable public  buyer;
+address payable public seller;
 uint256 public  amount;
 string public baseuri;
 mapping(address=>bool) public isseller;
