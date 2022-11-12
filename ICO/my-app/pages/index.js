@@ -1,9 +1,9 @@
 import {React,useRef,useState,useEffect} from 'react';
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
-import Web3Modal from 'web3modal';
-import { providers,BigNumber } from "ethers";
-
+import Web3Modal, { getProviderInfoFromChecksArray } from 'web3modal';
+import { providers,BigNumber,utils } from "ethers";
+import { ICO_CONTRACT_ABI } from '../../constants';
 
  
 export default function Home() {
@@ -11,8 +11,11 @@ export default function Home() {
   const Web3ModalRef = useRef();
   const [walletConnected,setwalletConnected] = useState(false);
   const [tokensminted,settokensminted] = useState(zero);
+  const [cryptodevtokenbalance,setcryptodevtokenbalance] = useState(zero);
+  const [tokenamount,settokenamount] = useState(zero);
 
-
+ 
+ 
 
   const connectwallet = async () => {
     try {
@@ -42,6 +45,33 @@ export default function Home() {
     }
     return web3Provider;
   };
+// 1+1 
+
+  const mintcryptodevtoken = async(amount)=>{
+try{
+const signer = getProviderOrSigner(true);
+const cryptodevcontract = new Contract (ICO_CONTRACT_ADDRESS,ICO_CONTRACT_ABI,signer)
+const value  = 0.001 * amount;
+cryptodevcontract.mint(amount,{
+value:utils.parseEther(value.toString())
+})
+}
+catch(err){
+  console.error(err) 
+}
+  }
+
+const renderbutton = ()=>{
+  return(
+    <>
+    <div style = {{display:'flex-col'}}>
+<input type="number" placeholder="amount of tokens" onChange={(e)=>{settokenamount(BigNumber.from(e.target.value))}}></input>
+<button className={styles.button} disabled={!(tokenamount>0)}> Mint </button>
+    </div>
+    </>
+
+  )
+}
 
     useEffect(()=>{
       if(!walletConnected){
@@ -60,6 +90,7 @@ export default function Home() {
 
 
   return(
+    <>
    <div>
     <Head>
     
@@ -69,7 +100,9 @@ export default function Home() {
 
 <div>
 {!walletConnected ? (<button onClick={connectwallet} className={styles.button}> connect wallet </button>)
-: <div> connected </div>}
+:
+<div> overall {utils.formatEther(tokensminted)}/10000 have been minted </div>}
+<div className={styles.description}> You have minted {utils.formatEther(cryptodevtokenbalance)} cryptodevtokens </div>
 </div>
 
 
@@ -77,6 +110,6 @@ export default function Home() {
 
 </div>
    </div>
-     
+   </>
   )
 }

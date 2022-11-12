@@ -20,7 +20,7 @@ constructor(address _nftcontract) ERC20("CryptoDevToken","CT"){
 } 
 
 // claims 10 tokens per owned NFT 
-function claim()public{
+function claim()public{ 
     address sender = msg.sender;
     uint256 balance = cryptodevnft.getebalanceof(sender);
     uint amounttoclaim = 0;
