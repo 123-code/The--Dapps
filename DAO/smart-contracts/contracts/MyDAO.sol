@@ -58,6 +58,14 @@ modifier DeadlineNotExceeded(uint256 pindex){
     require(block.timestamp < nftproposal[pindex].deadline,"DEADLINE EXCEEEDED"); _;
 }
 
+// modifier giving only passed proposals
+
+modifier InactiveProposalOnly(uint256 _proposalindex){
+    require(nftproposal[_proposalindex].deadline <= block.timestamp,"DEADLINE NOT EXCEEDED");
+    require(nftproposal[_proposalindex].executed == false,"PROPOSAL NOT EXECUTED");
+    _;
+}
+
 
 // gets the token id to buy  as input to create proposal;
 function createproposal(uint256 _token_id) external NFTHolderOnly returns(uint256){
@@ -76,6 +84,37 @@ enum voteoptions{
     NO 
 }
 
+function voteonproposal(uint256 _proposalIndex,voteoptions vote ) external NFTHolderOnly
+ DeadlineNotExceeded(_proposalIndex){
+Proposal storage proposal = nftproposal[_proposalIndex];
+uint numoftokens = CryptodevsContract.balanceOf(msg.sender);
+uint votes = 0;
+
+for(uint256 i=0;i<numoftokens;i++){
+    uint256 TokenID = CryptodevsContract.tokenOfOwnerByIndex(msg.sender,i);
+    if(proposal.nftused[TokenID]==false){
+votes += 1;
+    }
+    proposal.nftused[TokenID] = true;
+    
+
+}
+
+require(votes > 0,"YOU ALREADY VOTED!!");
+
+if(vote == voteoptions.YES){
+proposal.yesvotes += 1;
+}    
+if(vote == voteoptions.NO){
+proposal.novotes += 1;
+}
+}
+
+
+
+function executeproposal() external{
+
+}
 
 
 
