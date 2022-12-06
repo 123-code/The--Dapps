@@ -58,7 +58,7 @@ modifier DeadlineNotExceeded(uint256 pindex){
     require(block.timestamp < nftproposal[pindex].deadline,"DEADLINE EXCEEEDED"); _;
 }
 
-// modifier giving only passed proposals
+// modifier giving only passed proposals deadline not exceeded & proposal not executed.
 
 modifier InactiveProposalOnly(uint256 _proposalindex){
     require(nftproposal[_proposalindex].deadline <= block.timestamp,"DEADLINE NOT EXCEEDED");
@@ -112,10 +112,28 @@ proposal.novotes += 1;
 
 
 
-function executeproposal() external{
+function executeproposal(uint256 _proposalindex) external NFTHolderOnly InactiveProposalOnly(_proposalindex){
+    // get proposal passed as parameter from nftproposal mapping.
+Proposal storage proposal = nftproposal[_proposalindex];
+
+// check if yes votes > no votes
+if(proposal.yesvotes > proposal.novotes){
+    // if condition true, purchase an nft
+    uint256 nftprice = nftMarketplace.getprice();
+    // check balances
+    require(address(this).balance > nftprice,"not enough funds!");
+    nftMarketplace.purchaseNFT{value: nftprice}(proposal._nft_id);
 
 }
+proposal.executed = true;
+}
 
+// transfers contract ETH balance to address
+function withdrawether() external onlyOwner{
+    payable(owner()).transfer(address(this).balance);
+}
 
-
+// allow contract to receive ether from a wallet directly
+receive() external payable{}
+fallback() external payable{{}}
 }
