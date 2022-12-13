@@ -1,0 +1,76 @@
+import {Contract,providers} from 'ethers';
+import { formatEther } from "ethers/lib/utils";
+import Head from 'next/head';
+import { useEffect, useRef, useState } from "react";
+import Web3Modal from "web3modal";
+import styles from "../styles/Home.module.css";
+
+export default function Home() {
+  // change connectwalet settings to goerli
+  const Web3ModalRef = useRef();
+  const [walletConnected,setwalletConnected] = useState(false);
+  const connectwallet = async () => {
+    try {
+
+      await getProviderOrSigner();
+      setwalletConnected(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const getProviderOrSigner = async (needSigner = false) => {
+    
+    const provider = await Web3ModalRef.current.connect();
+    const web3Provider = new providers.Web3Provider(provider);
+
+    
+    const { chainId } = await web3Provider.getNetwork();
+    if (chainId !== 4) {
+      window.alert("Change the network to rinkeby");
+      throw new Error("Change network to rinkeby");
+    }
+
+    if (needSigner) {
+      const signer = web3Provider.getSigner();
+      return signer;
+    }
+    return web3Provider;
+  };
+
+  useEffect(()=>{
+    if(!walletConnected){
+      Web3ModalRef.current = new Web3Modal({
+        network:"rinkeby",
+        providerOptions:{},
+        disableInjectedProvider:false,
+      });
+      connectwallet();
+    }
+
+
+  },[])
+
+
+  return (
+    <>
+     <div>
+    <Head>
+      <title> My DAO </title>
+    </Head>
+<div className={styles.main}>
+  
+{!walletConnected ? (<button onClick={connectwallet} className={styles.button}> connect wallet </button>)
+: null}
+    
+
+</div>
+   </div>
+    
+    </>
+  )
+}
+
+/** import Head from 'next/head'
+import Image from 'next/image'
+import styles from '../styles/Home.module.css' */
