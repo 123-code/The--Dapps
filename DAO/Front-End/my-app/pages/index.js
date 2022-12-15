@@ -9,6 +9,19 @@ export default function Home() {
   // change connectwalet settings to goerli
   const Web3ModalRef = useRef();
   const [walletConnected,setwalletConnected] = useState(false);
+
+
+  const getDAOowner = ()=>{
+   const DAOcontract =  getDAOcontractInstance(true);
+   
+
+  }
+
+const getDAOcontractInstance = (getProviderOrSigner)=>{
+  const signer = getProviderOrSigner(getProviderOrSigner);
+  return  mydaocontract = new Contract(DAO_CONTRACT_ADDRESS,DAO_CONTRACT_ABI,signer);
+}
+
   const connectwallet = async () => {
     try {
 
