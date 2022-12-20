@@ -3,19 +3,49 @@ import { formatEther } from "ethers/lib/utils";
 import Head from 'next/head';
 import { useEffect, useRef, useState } from "react";
 import Web3Modal from "web3modal";
+import { MY_DAO_CONTRACT_ADDRESS,
+  MY_DAO_CONTRACT_ABI,
+  NFT_CONTRACT_ADDRESS,
+  NFT_CONTRACT_ABI
+} from './constants.js';
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
   // change connectwalet settings to goerli
+  // react hooks at the top 
   const Web3ModalRef = useRef();
   const [walletConnected,setwalletConnected] = useState(false);
+  const [loading,setloading] = useState(false);
+  const [isOwner,setIsOwner] = useState(false);
 
 
-  const getDAOowner = ()=>{
-   const DAOcontract =  getDAOcontractInstance(true);
+
+  const getDAOowner = async()=>{
+    try{
+      const signer = getProviderOrSigner(true);
+      const DAOcontract =  getDAOcontractInstance(true);
    
-
+      const _owner = await DAOcontract.owner();
+   
+      const address = signer.getaddress();
+   
+      if(address.toLowerCase() === _owner.toLowerCase()){
+       setIsOwner(true);
+      }
+    }catch(err){
+      console.error(err)
+    }
   }
+
+
+  const CreateProposal = ()=>{
+    try{
+
+    }catch(err){
+      console.error(err);
+    }
+  }
+
 
 const getDAOcontractInstance = (getProviderOrSigner)=>{
   const signer = getProviderOrSigner(getProviderOrSigner);
