@@ -37,18 +37,38 @@ export default function Home() {
     }
   }
 
+const GetNumberProposalsInDAO  = async ()=>{
+  try{
+    const signer = await getProviderOrSigner(false)
+    const daocontract = getDAOcontractInstance(signer)
+    const numberofproposals = daocontract.proposalcounter()
+    return numberofproposals
+  }catch(err){
+    console.error(err)
+  }
 
-  const CreateProposal = ()=>{
+
+}
+
+  const CreateProposal = async ()=>{
     try{
+const signer = getProviderOrSigner(true)
+const daocontract = getDAOcontractInstance(signer)
+const tx = await daocontract.createproposal(faketokenid)
+setloading(true)
+await tx.wait()
+await GetNumberProposalsInDAO()
+setloading(false)
 
     }catch(err){
       console.error(err);
+      window.alert(err.data.message)
     }
   }
 
 
 const getDAOcontractInstance = (getProviderOrSigner)=>{
-  const signer = getProviderOrSigner(getProviderOrSigner);
+  
   return  mydaocontract = new Contract(DAO_CONTRACT_ADDRESS,DAO_CONTRACT_ABI,signer);
 }
 
@@ -116,4 +136,10 @@ const getDAOcontractInstance = (getProviderOrSigner)=>{
 
 /** import Head from 'next/head'
 import Image from 'next/image'
-import styles from '../styles/Home.module.css' */
+import styles from '../styles/Home.module.css'
+
+if contract tests dont work, change proposalcounter
+to numProposals
+on contract and redeploy 
+
+*/
