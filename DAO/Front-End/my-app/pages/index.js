@@ -50,6 +50,18 @@ const GetNumberProposalsInDAO  = async ()=>{
 
 }
 
+// fix contract instance function 
+const getuserNFTbalance = async()=>{
+  try{
+const signer = await getProviderOrSigner(true);
+const daocontract = getDAOcontractInstance(signer);
+const balance = await nft
+
+  }catch(err){
+
+  }
+}
+
   const CreateProposal = async ()=>{
     try{
 const signer = getProviderOrSigner(true)
@@ -69,8 +81,17 @@ setloading(false)
 
 const getDAOcontractInstance = (getProviderOrSigner)=>{
   
-  return  mydaocontract = new Contract(DAO_CONTRACT_ADDRESS,DAO_CONTRACT_ABI,signer);
+  return new Contract(MY_DAO_CONTRACT_ADDRESS,MY_DAO_CONTRACT_ABI,getProviderOrSigner);
 }
+
+
+const getNFTContractInstance = async(getProviderOrSigner)=>{
+return  new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,getProviderOrSigner);
+}
+
+
+
+
 
   const connectwallet = async () => {
     try {
