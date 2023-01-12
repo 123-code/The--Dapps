@@ -7,7 +7,7 @@ import { MY_DAO_CONTRACT_ADDRESS,
   MY_DAO_CONTRACT_ABI,
   NFT_CONTRACT_ADDRESS,
   NFT_CONTRACT_ABI
-} from './constants.js';
+} from '../constants.js';
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
@@ -79,6 +79,22 @@ setloading(false)
   }
 
 
+  const voteonproposal = async()=>{
+  
+    try{
+      const signer = await getProviderOrSigner(true);
+     const contract = getDAOcontractInstance(signer);
+     const tx = await contract.voteonproposal();
+     await tx.wait();
+      
+          }catch(err){
+            console.error(err);
+            window.alert(err.data.message)
+          }
+  }
+
+
+
 const getDAOcontractInstance = (getProviderOrSigner)=>{
   
   return new Contract(MY_DAO_CONTRACT_ADDRESS,MY_DAO_CONTRACT_ABI,getProviderOrSigner);
@@ -88,6 +104,7 @@ const getDAOcontractInstance = (getProviderOrSigner)=>{
 const getNFTContractInstance = async(getProviderOrSigner)=>{
 return  new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,getProviderOrSigner);
 }
+
 
 
 
