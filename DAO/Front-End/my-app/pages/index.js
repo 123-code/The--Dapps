@@ -17,6 +17,17 @@ export default function Home() {
   const [walletConnected,setwalletConnected] = useState(false);
   const [loading,setloading] = useState(false);
   const [isOwner,setIsOwner] = useState(false);
+  // total dao contract balance 
+  const [TreasuryBalance,SetTreasuryBalance] = useState(0);
+  const [Numproposals,setNumProposals] = useState();
+  const [Proposals,SetProposals] = useState([]);
+  const [nftbalance,setnftbalance] = useState(0);
+  const [TokenID,setTokenID] = useState("");
+  const [SelectedTab,setSelectedTab] = useState("");
+
+
+
+
 
 
 
@@ -36,6 +47,39 @@ export default function Home() {
       console.error(err)
     }
   }
+
+  const WithdrawDAOEther = async()=>{
+    try{
+      const signer = getProviderOrSigner(true);
+      const DAOcontract = getDAOcontractInstance(true);
+  
+      const tx = await DAOcontract.withdrawether();
+      setloading(true);
+      await tx.wait();
+      setloading(false);
+  
+      getDAOTreasury();
+  
+    }catch(err){
+      console.error(err)
+      window.alert(err.reason);
+    }
+  }
+
+
+  const getDAOTreasury = async()=>{
+  try{
+    const provider = getProviderOrSigner();
+    const DAOcontract = getDAOcontractInstance(provider);
+
+    const balance = await provider.getBalance(MY_DAO_CONTRACT_ADDRESS);
+    SetTreasuryBalance(balance.toString());
+  }
+  catch(err){
+    console.error(err)
+  }
+  }
+  
 
 const GetNumberProposalsInDAO  = async ()=>{
   try{
@@ -127,9 +171,9 @@ return  new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,getProviderOrSigner);
 
     
     const { chainId } = await web3Provider.getNetwork();
-    if (chainId !== 4) {
-      window.alert("Change the network to rinkeby");
-      throw new Error("Change network to rinkeby");
+    if (chainId !== 5) {
+      window.alert("Change the network to goerli");
+      throw new Error("Change network to goerli");
     }
 
     if (needSigner) {
