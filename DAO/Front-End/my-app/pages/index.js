@@ -137,6 +137,56 @@ setloading(false)
           }
   }
 
+  const FetchProposalByID =  async(id)=>{
+    try{
+      const provider = getProviderOrSigner();
+      const daocontract = getDAOcontractInstance(provider);
+      const proposal = daocontract.nftproposal(id);
+      const parsedproposal = {
+        proposalID :id,
+        tokenID:proposal.tokenid.toString(),
+        deadline: new Date(parseInt(proposal.deadline.toString())*1000),
+        yesvotes:proposal.yesvotes.toString(),
+        novotes:proposal.novotes.toString(),
+        executed:proposal.executed,
+      }
+      return parsedproposal;
+    }catch(err){
+      console.error(err);
+    }
+   
+  }
+
+  const FetchAllProposals = async()=>{
+    try{
+      const proposals = [];
+      for(let i=0;i<Numproposals;i++){
+        const proposal = await FetchProposalByID(i);
+        proposals.push(proposal);
+      }
+      SetProposals(proposals);
+      return proposals;
+    }catch(err){
+      console.error(err);
+    }
+    
+  }
+
+  const ExecuteProposal = async(id)=>{
+    try{
+const signer = getProviderOrSigner(true);
+const daocontract = getDAOcontractInstance(signer);
+const tx = await daocontract.executeproposal(id);
+setloading(true);
+await tx.wait();
+setloading(false);
+await FetchAllProposals();
+await getDAOTreasury();
+    }catch(err){
+      console.error(err);
+      window.alert(err.reason)
+    }
+  }
 
 
 const getDAOcontractInstance = (getProviderOrSigner)=>{
@@ -190,11 +240,27 @@ return  new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI,getProviderOrSigner);
         providerOptions:{},
         disableInjectedProvider:false,
       });
-      connectwallet();
+      connectwallet().then(()=>{
+        getDAOTreasury();
+        getuserNFTbalance();
+        GetNumberProposalsInDAO();
+        getDAOowner();
+      })
     }
 
 
-  },[])
+  },[walletConnected]);
+
+
+  function renderCreateProposalsTab(){
+    return(
+      <>
+if (loading) {
+ <div>  Loading... Waiting for transaction...  </div>
+}
+      </>
+    )
+  }
 
 
   return (
