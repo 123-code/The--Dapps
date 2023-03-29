@@ -1,5 +1,5 @@
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^ 0.8.17;
-//call to Pool.stakedbalance errored: Error encoding arguments: Error: invalid address (argument="address", value="", code=INVALID_ARGUMENT, version=address/5.5.0) (argument=null, value="", code=INVALID_ARGUMENT, version=abi/5.5.0)
 contract Pool{
 
 mapping(address=>uint) public stakedbalance;
@@ -9,12 +9,10 @@ mapping(address=>bool)public distributed;
 
 uint total;
 uint deposit;
-uint amount;
+//uint amount ;
 
 
 
-/*There is no mechanism in place to prevent malicious users from calling the "DistributeLPs" 
-function multiple times and receiving more LP tokens than they are entitled to.*/
 function DistributeLPs()public{
     require(hasstaked[msg.sender] == true);
     require(distributed[msg.sender] == false,"already received LPs");
@@ -26,16 +24,29 @@ deposit += 1;
 }
 
 function getLPsByAddress(address search)public view returns(uint){
+return LPtokens[search];
+}
 
+
+function GetAmount() public view returns(uint){
+return total;
+}
+
+
+function stake() external payable {
+    require(msg.value > 0, "Invalid amount");
+    require(msg.value <= address(this).balance, "Insufficient balance");
+    uint256 amount = msg.value;
+    LPtokens[msg.sender] += amount;
+    total += amount;
+    (bool sent, ) = payable(address(this)).call{value: amount}("");
+    require(sent,"failed to send");
+    hasstaked[msg.sender] = true;
+    stakedbalance[msg.sender] += amount;
 }
 
  receive() external payable {
-     //require(msg.sender)
-    require(msg.value > 0.001 ether,".I.");
-     stakedbalance[msg.sender] += msg.value;
-     LPtokens[msg.sender] += msg.value;
-     total += msg.value;
-    payable(address(this)).transfer(msg.value);
+
  }
 
 
