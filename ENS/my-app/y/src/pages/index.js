@@ -31,7 +31,7 @@ export default function Home() {
 
     
     const { chainId } = await web3Provider.getNetwork();
-    if (chainId !== 5) {
+    if (chainId !== 5pu) {
       window.alert("Change the network to Goerli");
       throw new Error("Change network to Goerli");
     }
