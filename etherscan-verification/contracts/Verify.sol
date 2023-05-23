@@ -1,18 +1,16 @@
-pragma solidity ^ 0.8.4;
+//SPDX-License-Identifier: Unlicensed
+pragma solidity ^0.8.4;
 
-
-contract Verify{
+contract Verify {
     string private greeting;
 
-    constructor(){
-
+    constructor() {
     }
 
-
-    function hello(bool sayhello) public pure returns(string memory){
-        if(sayhello){
-            return "Hello there";
+    function hello(bool sayHello) public pure returns (string memory) {
+        if(sayHello) {
+            return "hello";
         }
-        return"ll";
+        return "";
     }
 }
