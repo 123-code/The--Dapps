@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 
 contract MyNFT is ERC721Enumerable,Ownable{
-    using String for uint256;
+    //using String for uint256;
     string _baseTokenURI;
 
     uint public _price = 0.01 ether;
@@ -27,17 +27,17 @@ contract MyNFT is ERC721Enumerable,Ownable{
 
 
     function mint()public payable whenNotPaused{
-        require(tokenIDs < maxtokenIDs,"Sold out");
+        require(tokenIDs < _maxtokenIDs,"Sold out");
         require(msg.value >= _price,"Incorrect Value Sent");
         tokenIDs++;
         _safeMint(msg.sender,tokenIDs);
     }
 
-    function _baseURI() internal virtual view overrides returns(string memory){
+    function _baseURI() internal virtual view override returns(string memory){
         return _baseTokenURI;
     }
 
-    function tokenURI() public virtual view overrides returns(string memory){
+    function tokenURI() public virtual view override returns(string memory){
         //TODO
     }
 
@@ -50,12 +50,12 @@ contract MyNFT is ERC721Enumerable,Ownable{
         address _owner = owner();
         uint256 amount = address(this).balance;
         (bool sent,) = _owner.call{value:amount}("");
-        require(sent,"Failed to send Ether")
+        require(sent,"Failed to send Ether");
 
     }
 
 
-    fallback() external payableP{
+    fallback() external payable{
 
     }
 
