@@ -3,7 +3,7 @@ pragma solidity ^ 0.8.4;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-
+// ADDRESS: 0xeE36cE13936bbCdf05872d6FC36Dd371DF43F867
 
 contract MyNFT is ERC721Enumerable,Ownable{
     //using String for uint256;
@@ -37,8 +37,10 @@ contract MyNFT is ERC721Enumerable,Ownable{
         return _baseTokenURI;
     }
 
-    function tokenURI() public virtual view override returns(string memory){
-        //TODO
+    function tokenURI(uint256 tokenId ) public virtual view override returns(string memory){
+        require(_exists(tokenId),"ERC721Metadata: URI query for nonexistent token");
+        string memory baseURI = _baseURI();
+        return bytes(baseURI).length>0 ? string(abi.encodePacked(baseURI,Strings.toString(tokenId),'.json')):"";
     }
 
     function pause(bool val) public onlyOwner{
