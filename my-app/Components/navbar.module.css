@@ -1,0 +1,46 @@
+@media (max-width: 800px) {
+    .navIcon {
+      display: block !important;
+    }
+  
+    .navMenu {
+      display: none;
+    }
+  
+    .navItem {
+      width: 100%;
+      text-align: center;
+    }
+  
+    .navLink{
+      display: block;
+      padding: 10px;
+      text-align: center;
+    }
+  
+    .navLink:hover {
+      background-color: #f1f1f1;
+    }
+  
+    .active {
+      display: block;
+       border-bottom: 1px solid #ccc; 
+    }
+  }
+  
+  @media (min-width: 801px) {
+    .navIcon {
+      display: none !important;
+    }
+  
+    .navMenu {
+      display: flex !important;
+      justify-content: flex-end;
+      margin-right: 50px;
+      border-bottom: 1px solid #ccc; 
+    }
+  
+    .navItem {
+      margin: 0 20px;
+    }
+  }
